@@ -29,8 +29,10 @@ public class DocumentServiceTests
     [Fact]
     public async Task CreateAsync_Should_Succeed()
     {
-        _repoMock.Setup(x => x.GetByLegalNumberAsync(It.IsAny<string>()))
-            .ReturnsAsync(Maybe<Document>.None);
+        //arrange
+        string legalNumber = "FE-1";
+        _repoMock.Setup(x => x.ExistsDocumentByLegalNumberAsync(legalNumber))
+            .ReturnsAsync(false);
 
         var doc = Document.Create("FE-1", DocumentType.Invoice,
             "123", "E", "456", "R",
@@ -40,12 +42,18 @@ public class DocumentServiceTests
         _repoMock.Setup(x => x.AddAsync(It.IsAny<Document>()))
             .ReturnsAsync(Result.Success(doc));
 
+        //Act
         var result = await _service.CreateAsync(
-            "FE-1", DocumentType.Invoice,
+            legalNumber, DocumentType.Invoice,
             "123", "E", "456", "R",
             new List<DocumentItem> { DocumentItem.Create("A", 1, 100).Value },
             null);
 
+        //Assert
         Assert.True(result.IsSuccess);
+        _repoMock.Verify(
+        x => x.ExistsDocumentByLegalNumberAsync(legalNumber),
+        Times.Once
+    );
     }
 }

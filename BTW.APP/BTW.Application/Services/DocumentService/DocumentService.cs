@@ -33,8 +33,8 @@ public class DocumentService : IDocumentService
     public async Task<Result<Document>> CreateAsync(string legalNumber,DocumentType type,string emitterNit,string emitterName,string receiverNit,
         string receiverName,List<DocumentItem> items,Guid? referenceDocumentId)
     {
-        var existing = await _repository.GetByLegalNumberAsync(legalNumber);
-        if (existing.HasValue)
+        var existing = await _repository.ExistsDocumentByLegalNumberAsync(legalNumber);
+        if (existing.Value)
             return Result.Failure<Document>("Ya existe un documento con ese número legal");
 
         if (type == DocumentType.CreditNote)
@@ -57,7 +57,7 @@ public class DocumentService : IDocumentService
         if (addResult.IsFailure)
             return Result.Failure<Document>(addResult.Error);
 
-        await _logService.LogAsync(addResult.Value.Id, "DOCUMENT_CREATED");
+        await _logService.LogAsync(addResult.Value.Id, "DOCUMENTO_CREADO");
         await _historyService.AddAsync(addResult.Value.Id, addResult.Value.Status);
 
         return addResult;
@@ -77,7 +77,7 @@ public class DocumentService : IDocumentService
         if (updateResult.IsFailure)
             return Result.Failure(updateResult.Error);
 
-        await _logService.LogAsync(doc.Value.Id, "DOCUMENT_ISSUED");
+        await _logService.LogAsync(doc.Value.Id, "DOCUMENTO_EMITIDO");
         await _historyService.AddAsync(doc.Value.Id, doc.Value.Status);
 
         return Result.Success();
@@ -97,7 +97,7 @@ public class DocumentService : IDocumentService
         if (updateResult.IsFailure)
             return Result.Failure(updateResult.Error);
 
-        await _logService.LogAsync(doc.Value.Id, "DOCUMENT_CANCELLED");
+        await _logService.LogAsync(doc.Value.Id, "DOCUMENTO_ANULADO");
         await _historyService.AddAsync(doc.Value.Id, doc.Value.Status);
 
         return Result.Success();

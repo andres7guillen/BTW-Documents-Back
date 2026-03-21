@@ -16,11 +16,11 @@ public class Document
     public string ReceiverNit { get; private set; }
     public string ReceiverName { get; private set; }
     public Guid? ReferenceDocumentId { get; private set; }
+    private readonly List<DocumentItem> _items = new();
     public DateTime CreatedAt { get; private set; }
     public DateTime? IssuedAt { get; private set; }
-    private readonly List<DocumentItem> _items = new();
     public IReadOnlyCollection<DocumentItem> Items => _items;
-    public decimal Total => _items.Sum(x => x.Subtotal);
+    public decimal Total { get; private set; }
     private Document() { }
     private Document(
         string legalNumber,
@@ -69,19 +69,16 @@ public class Document
             return Result.Failure<Document>("La nota crédito debe referenciar una factura");
 
         var doc = new Document(
-            legalNumber,
-            type,
-            emitterNit,
-            emitterName,
-            receiverNit,
-            receiverName,
-            referenceDocumentId
-        );
-
-        foreach (var item in items)
-        {
-            doc._items.Add(item);
-        }
+    legalNumber,
+    type,
+    emitterNit,
+    emitterName,
+    receiverNit,
+    receiverName,
+    referenceDocumentId
+);
+        doc._items.AddRange(items);
+        doc.Total = doc._items.Sum(x => x.Subtotal);
 
         if (doc.Total <= 0)
             return Result.Failure<Document>("Total inválido");
@@ -91,8 +88,8 @@ public class Document
 
     public Result AddItem(string description, int quantity, decimal unitValue)
     {
-        if (Status != DocumentStatus.Draft)
-            return Result.Failure("No se pueden modificar documentos emitidos o anulados");
+        if (Status == DocumentStatus.Issued)
+            return Result.Failure("Un documento EMITIDO no puede editarse, solo anularse.");
 
         var itemResult = DocumentItem.Create(description, quantity, unitValue);
 

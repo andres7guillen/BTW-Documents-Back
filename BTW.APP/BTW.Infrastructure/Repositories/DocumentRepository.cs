@@ -31,13 +31,10 @@ public class DocumentRepository : IDocumentRepository
             : Maybe.From(document);
     }
 
-    public async Task<Maybe<Document>> GetByLegalNumberAsync(string legalNumber)
+    public async Task<Result<bool>> ExistsDocumentByLegalNumberAsync(string legalNumber)
     {
-        var document = await _context.Documents
-            .FirstOrDefaultAsync(x => x.LegalNumber == legalNumber);
-        return document == null
-            ? Maybe.None 
-            : Maybe.From(document);
+        return await _context.Documents
+            .AnyAsync(x => x.LegalNumber == legalNumber);       
     }
 
     public async Task<Result<List<Document>>> GetAllAsync()
