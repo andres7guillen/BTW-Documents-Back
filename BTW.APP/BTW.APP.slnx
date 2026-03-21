@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BTW.API/BTW.API.csproj" />
+  <Project Path="BTW.Application/BTW.Application.csproj" />
+  <Project Path="BTW.Domain/BTW.Domain.csproj" />
+  <Project Path="BTW.Infrastructure/BTW.Infrastructure.csproj" />
+  <Project Path="BTW.Tests/BTW.Tests.csproj" />
+</Solution>

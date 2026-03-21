@@ -1,0 +1,6 @@
+@BTW.API_HostAddress = http://localhost:5228
+
+GET {{BTW.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
