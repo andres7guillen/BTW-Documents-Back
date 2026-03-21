@@ -8,6 +8,6 @@ public interface IDocumentRepository
     Task<Result<Document>> AddAsync(Document document);
     Task<Result<bool>> UpdateDocumentAsync(Document document);
     Task<Maybe<Document>> GetByIdAsync(Guid id);
-    Task<Maybe<Document>> GetByLegalNumberAsync(string legalNumber);
+    Task<Result<bool>> ExistsDocumentByLegalNumberAsync(string legalNumber);
     Task<Result<List<Document>>> GetAllAsync();
 }
