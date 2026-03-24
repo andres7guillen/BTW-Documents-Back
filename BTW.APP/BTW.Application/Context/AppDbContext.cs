@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.HasKey(x => x.Cufe);
+            entity.HasKey(x => x.Id);
 
             entity.Property(x => x.LegalNumber)
                 .IsRequired()

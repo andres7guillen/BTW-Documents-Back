@@ -18,6 +18,7 @@ public class DocumentRepository : IDocumentRepository
     public async Task<Result<Document>> AddAsync(Document document)
     {
         await _context.Documents.AddAsync(document);
+        await _context.SaveChangesAsync();
         return Result.Success(document);
     }
 
@@ -37,12 +38,20 @@ public class DocumentRepository : IDocumentRepository
             .AnyAsync(x => x.LegalNumber == legalNumber);       
     }
 
-    public async Task<Result<List<Document>>> GetAllAsync()
+    public async Task<Result<(IEnumerable<Document>, int totalCount)>> GetAllAsync(int page, int pageSize)
     {
-        var documents = await _context.Documents
-            .Include(x => x.Items)
+        var query = _context.Documents.AsQueryable();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
-        return Result.Success(documents);
+        var result = (items, totalCount);
+
+        return Result.Success<(IEnumerable<Document>, int)>(result);
     }
 
     public async Task<Result<bool>> UpdateDocumentAsync(Document document)
