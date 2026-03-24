@@ -17,7 +17,7 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateDocumentRequest request)
+    public async Task<IActionResult> Create([FromBody]CreateDocumentRequest request)
     {
         var items = request.Items
             .Select(x => DocumentItem.Create(x.Description, x.Quantity, x.UnitValue))
@@ -79,9 +79,12 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
     {
-        var docs = await _service.GetAllAsync();
-        return Ok(docs);
+        var docs = await _service.GetAllAsync(page, pageSize);
+        return docs.IsSuccess
+            ? Ok(docs.Value)
+            : BadRequest(docs.Error);
     }
 }

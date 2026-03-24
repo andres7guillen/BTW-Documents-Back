@@ -1,4 +1,5 @@
 ﻿using BTW.Application.Context;
+using BTW.Application.Helpers;
 using BTW.Application.Services.DocumentHistory;
 using BTW.Application.Services.DocumentLogService;
 using BTW.Domain.Entities;
@@ -57,7 +58,7 @@ public class DocumentService : IDocumentService
         if (addResult.IsFailure)
             return Result.Failure<Document>(addResult.Error);
 
-        await _logService.LogAsync(addResult.Value.Id, "DOCUMENTO_CREADO");
+        await _logService.AddLogAsync(addResult.Value.Id, "DOCUMENTO_CREADO");
         await _historyService.AddAsync(addResult.Value.Id, addResult.Value.Status);
 
         return addResult;
@@ -77,7 +78,7 @@ public class DocumentService : IDocumentService
         if (updateResult.IsFailure)
             return Result.Failure(updateResult.Error);
 
-        await _logService.LogAsync(doc.Value.Id, "DOCUMENTO_EMITIDO");
+        await _logService.AddLogAsync(doc.Value.Id, "DOCUMENTO_EMITIDO");
         await _historyService.AddAsync(doc.Value.Id, doc.Value.Status);
 
         return Result.Success();
@@ -97,7 +98,7 @@ public class DocumentService : IDocumentService
         if (updateResult.IsFailure)
             return Result.Failure(updateResult.Error);
 
-        await _logService.LogAsync(doc.Value.Id, "DOCUMENTO_ANULADO");
+        await _logService.AddLogAsync(doc.Value.Id, "DOCUMENTO_ANULADO");
         await _historyService.AddAsync(doc.Value.Id, doc.Value.Status);
 
         return Result.Success();
@@ -108,8 +109,15 @@ public class DocumentService : IDocumentService
         return await _repository.GetByIdAsync(id);
     }
 
-    public async Task<Result<List<Document>>> GetAllAsync()
+    public async Task<Result<PagedResult<Document>>> GetAllAsync(int page, int pageSize)
     {
-        return await _repository.GetAllAsync();
+        var result = await _repository.GetAllAsync(page, pageSize);
+        return new PagedResult<Document>
+        {
+            Items = result.Value.Item1,
+            TotalCount = result.Value.Item2,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }

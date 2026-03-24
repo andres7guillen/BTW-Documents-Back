@@ -9,5 +9,5 @@ public interface IDocumentRepository
     Task<Result<bool>> UpdateDocumentAsync(Document document);
     Task<Maybe<Document>> GetByIdAsync(Guid id);
     Task<Result<bool>> ExistsDocumentByLegalNumberAsync(string legalNumber);
-    Task<Result<List<Document>>> GetAllAsync();
+    Task<Result<(IEnumerable<Document>, int totalCount)>> GetAllAsync(int page, int pageSize);
 }

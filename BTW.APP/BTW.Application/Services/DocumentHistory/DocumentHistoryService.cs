@@ -1,4 +1,6 @@
-﻿using BTW.Domain.Enums;
+﻿using BTW.Application.Helpers;
+using BTW.Domain.Entities;
+using BTW.Domain.Enums;
 using BTW.Domain.Repositories;
 using CSharpFunctionalExtensions;
 
@@ -16,5 +18,17 @@ public class DocumentHistoryService : IDocumentHistoryService
     public async Task<Result> AddAsync(Guid documentId, DocumentStatus status)
     {
         return await _repository.AddAsync(documentId, status);
+    }
+
+    public async Task<Result<PagedResult<DocumentStatusHistory>>> GetLogAsync(Guid documentId, int page, int pageSize, string @event)
+    {
+        var result = await _repository.GetLogAsync(documentId, page, pageSize, @event);
+        return new PagedResult<DocumentStatusHistory>
+        {
+            Items = result.Value.Item1,
+            TotalCount = result.Value.Item2,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }
