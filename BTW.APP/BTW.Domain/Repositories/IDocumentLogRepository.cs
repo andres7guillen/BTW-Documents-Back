@@ -5,6 +5,6 @@ namespace BTW.Domain.Repositories;
 
 public interface IDocumentLogRepository
 {
-    Task<Result> AddLogAsync(Guid documentId, string @event);
+    Task<Result<DocumentLog>> AddLogAsync(Guid documentId, string @event);
     Task<Result<(IEnumerable<DocumentLog>, int totalCount)>> GetLogAsync(Guid documentId, int page, int pageSize, string @event);
 }

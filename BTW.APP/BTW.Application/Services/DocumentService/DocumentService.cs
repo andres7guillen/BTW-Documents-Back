@@ -1,5 +1,4 @@
-﻿using BTW.Application.Context;
-using BTW.Application.Helpers;
+﻿using BTW.Application.Helpers;
 using BTW.Application.Services.DocumentHistory;
 using BTW.Application.Services.DocumentLogService;
 using BTW.Domain.Entities;
@@ -7,11 +6,6 @@ using BTW.Domain.Enums;
 using BTW.Domain.Repositories;
 using BTW.Domain.ValueObjects;
 using CSharpFunctionalExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BTW.Application.Services.DocumentService;
 
@@ -109,9 +103,14 @@ public class DocumentService : IDocumentService
         return await _repository.GetByIdAsync(id);
     }
 
-    public async Task<Result<PagedResult<Document>>> GetAllAsync(int page, int pageSize)
+    public async Task<Result<PagedResult<Document>>> GetAllAsync(
+    int page,
+    int pageSize,
+    string? status,
+    string? type)
     {
-        var result = await _repository.GetAllAsync(page, pageSize);
+        var result = await _repository.GetAllAsync(page, pageSize, status, type);
+
         return new PagedResult<Document>
         {
             Items = result.Value.Item1,
@@ -119,5 +118,10 @@ public class DocumentService : IDocumentService
             Page = page,
             PageSize = pageSize
         };
+    }
+
+    public async Task<Result> Delete(Guid documentId)
+    {
+        return await _repository.Delete(documentId);
     }
 }

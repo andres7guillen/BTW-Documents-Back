@@ -17,7 +17,7 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody]CreateDocumentRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
     {
         var items = request.Items
             .Select(x => DocumentItem.Create(x.Description, x.Quantity, x.UnitValue))
@@ -79,12 +79,24 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? status = null,
+    [FromQuery] string? type = null)
     {
-        var docs = await _service.GetAllAsync(page, pageSize);
+        var docs = await _service.GetAllAsync(page, pageSize, status, type);
+
         return docs.IsSuccess
             ? Ok(docs.Value)
             : BadRequest(docs.Error);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id) 
+    {
+        var result = await _service.Delete(id);
+        return result.IsSuccess
+            ? Ok() : BadRequest(result.Error);
     }
 }

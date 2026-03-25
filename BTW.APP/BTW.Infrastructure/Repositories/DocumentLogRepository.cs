@@ -15,14 +15,14 @@ public class DocumentLogRepository : IDocumentLogRepository
         _context = context;
     }
 
-    public async Task<Result> AddLogAsync(Guid documentId, string @event)
+    public async Task<Result<DocumentLog>> AddLogAsync(Guid documentId, string @event)
     {
         var log = new DocumentLog(documentId, @event);
 
         await _context.DocumentLogs.AddAsync(log);
         await _context.SaveChangesAsync();
 
-        return Result.Success();
+        return Result.Success(log);
     }
 
     public async Task<Result<(IEnumerable<DocumentLog>, int totalCount)>> GetLogAsync(Guid documentId, int page, int pageSize, string @event)
