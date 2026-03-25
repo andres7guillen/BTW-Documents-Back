@@ -14,9 +14,9 @@ public class DocumentLogService : IDocumentLogService
         _repository = repository;
     }
 
-    public Task<Result<DocumentLog>> AddLogAsync(Guid documentId, string status)
+    public async Task<Result<DocumentLog>> AddLogAsync(Guid documentId, string status)
     {
-        throw new NotImplementedException();
+        return await _repository.AddLogAsync(documentId, status);
     }
 
     public async Task<Result<PagedResult<DocumentLog>>> GetLogAsync(Guid documentId, int page, int pageSize, string @event) 

@@ -12,6 +12,7 @@ public interface IDocumentService
         List<DocumentItem> items,Guid? referenceDocumentId);
     Task<Result> IssueAsync(Guid documentId);
     Task<Result> CancelAsync(Guid documentId);
+    Task<Result> Delete(Guid documentId);
     Task<Maybe<Document>> GetByIdAsync(Guid id);
-    Task<Result<PagedResult<Document>>> GetAllAsync(int page, int pageSize);
+    Task<Result<PagedResult<Document>>> GetAllAsync(int page,int pageSize,string? status,string? type);
 }

@@ -8,5 +8,5 @@ namespace BTW.Application.Services.DocumentHistory;
 public interface IDocumentHistoryService
 {
     Task<Result> AddAsync(Guid documentId, DocumentStatus status);
-    Task<Result<PagedResult<DocumentStatusHistory>>> GetLogAsync(Guid documentId, int page, int pageSize, string @event);
+    Task<Result<PagedResult<DocumentStatusHistory>>> GetLogAsync(Guid documentId, int page, int pageSize);
 }

@@ -26,17 +26,20 @@ public class DocumentHistoryRepository : IDocumentHistoryRepository
         return Result.Success();
     }
 
-    public async Task<Result<(IEnumerable<DocumentStatusHistory>, int totalCount)>> GetLogAsync(Guid documentId, int page, int pageSize, string @event)
+    public async Task<Result<(IEnumerable<DocumentStatusHistory>, int totalCount)>> GetLogAsync(Guid documentId, int page, int pageSize)
     {
         var query = _context.DocumentStatusHistories.AsQueryable();
-
-        var totalCount = await query.CountAsync();
-
         var items = await query
+            .Where(c => c.DocumentId == documentId)
             .OrderByDescending(x => x.ChangedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+        var totalCount = await query
+            .Where(c => c.DocumentId == documentId)
+            .CountAsync();
+
         var result = (items, totalCount);
 
         return Result.Success<(IEnumerable<DocumentStatusHistory>, int)>(result);

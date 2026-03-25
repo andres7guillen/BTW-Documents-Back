@@ -20,9 +20,9 @@ public class DocumentHistoryService : IDocumentHistoryService
         return await _repository.AddAsync(documentId, status);
     }
 
-    public async Task<Result<PagedResult<DocumentStatusHistory>>> GetLogAsync(Guid documentId, int page, int pageSize, string @event)
+    public async Task<Result<PagedResult<DocumentStatusHistory>>> GetLogAsync(Guid documentId, int page, int pageSize)
     {
-        var result = await _repository.GetLogAsync(documentId, page, pageSize, @event);
+        var result = await _repository.GetLogAsync(documentId, page, pageSize);
         return new PagedResult<DocumentStatusHistory>
         {
             Items = result.Value.Item1,

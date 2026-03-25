@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BTW.API.Controllers;
 
 [ApiController]
-[Route("api/documents/{documentId:guid}/history")]
+[Route("api/documentHistory")]
 public class DocumentHistoryController : ControllerBase
 {
     private readonly IDocumentHistoryService _service;
@@ -28,14 +28,13 @@ public class DocumentHistoryController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
+    [HttpGet("{documentId}")]
     public async Task<IActionResult> Get(
-        Guid documentId,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery(Name = "event")] string? @event = null)
+    Guid documentId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
     {
-        var result = await _service.GetLogAsync(documentId, page, pageSize, @event ?? string.Empty);
+        var result = await _service.GetLogAsync(documentId, page, pageSize);
 
         if (!result.IsSuccess)
             return BadRequest(result.Error);
